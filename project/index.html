@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="css/sample.css">
+<title>GoogleBook検索</title>
+</head>
+<body>
+
+  <header>
+    <h1>GoogleBooks検索</h1>
+    <p>
+      <input type="text" id="keyword" value="" >
+      <button id="readbook">検索</button>
+    </p>
+  </header>
+
+  <main>
+    <table id="content" style="display: none;">
+    <!--  
+      <tr>
+    <td>書籍名・出版社</td>
+    <td>出版日</td>
+    <td>サムネイル</td>
+    </tr>
+    -->
+    </table>
+    
+  </main>
+
+
+<script src="js/jquery-3.5.1.min.js"></script>
+<script>
+// 手順
+// 1. $.get() を使って 情報を取得する
+// 2. JSONデータ構造を基に本のタイトルを取得する
+// 3. 本のタイトル情報をHTMLに出力する
+// ---ここからは課題！
+// 4. クリックイベントで括る
+// 5. id="keyword"の入力値を取得 → URLの"?q=jquery"の"queryの文字を取得した入力値（変数）に変える"
+// 6. 出版社も表示してみよう！（データ構造はconsole.logで確認！！）
+// $.get() を使う[開始]
+
+$(function($){
+  //Ctrlキー+エンター
+  $("#keyword").keydown(function(e){
+    if(event.ctrlKey){
+      if(e.keyCode === 13){
+        $("#readbook").click();
+
+      }
+    }
+  }
+)});
+
+$("#readbook").on("click", function(){
+  content.style.display="block";
+
+$.get("https://www.googleapis.com/books/v1/volumes?q="+$("#keyword").val(), function(data){
+  console.log(data);
+  const items = data.items;
+  // console.log(items);
+  let view ="" //追加したのはここ
+
+ 
+  for (let i = 0; i < items.length; i++){
+    const item = items[i];
+    const title = item.volumeInfo.title;
+    const publisher = item.volumeInfo.publisher;
+    const publishedDate = item.volumeInfo.publishedDate;
+    const infoLink =  item.volumeInfo.infoLink;
+    const thumbnail = item.volumeInfo.imageLinks.thumbnail;
+    
+    // console.log(typeof publisher);
+
+    
+    if (typeof publisher == "undefined"){
+      // console.log(typeof publisher);
+      
+      view += "<div id = 'screen'>"+
+              // "<div id = 'bookinfo'>"+
+                
+                "<tr class = 'table'><td class ='name'><a href=" + infoLink + ">題名 :" + title + "<br>出版社:不明" + "</a></td><td class ='date'>出版日:" + 
+              publishedDate +"</td><td class='pic'>"+ "<img src="+thumbnail+ "></td><tr>"+
+              // "</div'>"+
+              // "<div id = 'pic'>"+
+              // "<img src="+thumbnail+ ">"+
+              // "</div'>"+
+              "</div'>";
+    }
+    else{
+
+    
+
+    // console.log(item.title);
+
+    // h += "<tr><td>" +title+ "</td><td>"+ publisher+"</td><td>" +"<img src="+thumbnail+ ">"+"</td></tr>";
+   
+    view +=  "<div id = 'screen'>"+
+             "<tr class = 'table'><td class ='name'><a href=" + infoLink + ">題名 :" + title + "<br>出版社:" + publisher + "</a></td><td class ='date'>出版日:" + 
+              publishedDate +"</td><td class ='pic'>"+ "<img src="+thumbnail+ "></td><tr>"+
+             
+             "</div'>";
+    // view = view + "<ul><li>題名 :"+ title + "</li></ul>";
+
+  }
+  }
+  $("#content").empty().hide().html(view).fadeIn(1000);
+  
+});
+// $.get() を使う[終了]
+
+ 
+});
+
+
+
+
+</script>
+</body>
+</html>
